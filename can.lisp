@@ -48,8 +48,7 @@
 	       (if (facts:binding-p r)
 		   (push (cons r x) bindings)
 		   (push `(or (lessp:lessp-equal ',r ,x)
-			      (eq ',r ,wild)
-			      (eq ,x ,wild))
+			      (eq ',r ,wild))
 			 constants))))
 	(unify o object :all)
 	(unify a action :admin)
@@ -62,16 +61,19 @@
 #+nil
 (can/rule 'user ':edit 'object (second *rules*))
 
-(defun can (action &optional (object :all)
-		     (user (or (session-user) :anonymous)))
-  (declare (ignore action object user))
-  (error "Please call CAN:COMPILE-RULES."))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let (can-lambda)
 
-(defun compile-rules ()
-  (setf (symbol-function 'can)
-	(compile nil `(lambda (action &optional (object :all)
-					(user (or (session-user) :anonymous)))
-			(eq (or ,@(mapcar (lambda (rule)
-					    (can/rule 'user 'action 'object rule))
-					  *rules*))
-			    :can)))))
+    (defun can (action &optional (object :all) (user :everyone))
+      (if can-lambda
+	  (funcall can-lambda action object user)
+	  (error "Please call CAN:COMPILE-RULES.")))
+
+    (defun compile-rules ()
+      (setq can-lambda
+	    (compile nil `(lambda (action object user)
+			    (eq (or ,@(mapcar (lambda (rule)
+						(can/rule 'user 'action
+							  'object rule))
+					      *rules*))
+				:can)))))))
