@@ -47,8 +47,8 @@
       (flet ((unify (r x wild)
 	       (if (facts:binding-p r)
 		   (push (cons r x) bindings)
-		   (push `(or (lessp:lessp-equal ',r ,x)
-			      (eq ',r ,wild))
+		   (push `(or (lessp:lessp-equal ,r ,x)
+			      (eq ,r ,wild))
 			 constants))))
 	(unify o object :all)
 	(unify a action :admin)
@@ -64,7 +64,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (let (can-lambda)
 
-    (defun can (action &optional (object :all) (user :everyone))
+    (defun can (action &optional (object :all) (user :anonymous))
       (if can-lambda
 	  (funcall can-lambda action object user)
 	  (error "Please call CAN:COMPILE-RULES.")))
