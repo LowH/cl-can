@@ -66,7 +66,7 @@
 
     (defun can (action &optional (object :all) (user :anonymous))
       (if can-lambda
-	  (funcall can-lambda action object user)
+	  (funcall can-lambda action object (or user :anonymous))
 	  (error "Please call CAN:COMPILE-RULES.")))
 
     (defun compile-rules ()
