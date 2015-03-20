@@ -54,8 +54,7 @@
 	(unify a action :admin)
 	(unify s subject :everyone))
       `(when (and ,@constants
-		  ,@(when specs
-		      `((facts:bound-p ,(sublis bindings specs)))))
+		  ,@(sublis bindings specs))
 	 ,p))))
 
 #+nil
