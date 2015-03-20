@@ -28,7 +28,7 @@
   :author "Thomas de Grivel <billitch@gmail.com>"
   :version "0.3"
   :description "semantic rule-based access control library."
-  :depends-on ("lowh-facts" "lessp" "rollback")
+  :depends-on ("facts" "lessp" "rollback")
   :components
   ((:file "package")
    (:file "can" :depends-on ("package"))))
