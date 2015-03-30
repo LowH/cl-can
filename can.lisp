@@ -47,15 +47,27 @@
       (flet ((unify (r x wild)
 	       (if (facts:binding-p r)
 		   (push (cons r x) bindings)
-		   (push `(or (eq ,r ,wild)
-                              (lessp:lessp-equal ,r ,x))
-			 constants))))
+                   (if (keywordp r)
+                       (unless (eq r wild)
+                         (push `(lessp:lessp-equal ,r ,x)
+                               constants))
+                       (push `(or (eq ,r ,wild)
+                                  (lessp:lessp-equal ,r ,x))
+                             constants))))
+             (join (prefix list)
+               (when list
+                 (if (cdr list)
+                     `((,prefix ,@list))
+                     list))))
 	(unify o object :all)
 	(unify a action :admin)
-	(unify s subject :everyone))
-      `(when (and ,@constants
-		  ,@(sublis bindings specs))
-	 ,p))))
+	(unify s subject :everyone)
+        (car
+         (join 'when
+               `(,@(join 'and
+                         `(,@constants ,@(join 'progn
+                                               (sublis bindings specs))))
+                   ,p)))))))
 
 #+nil
 (can/rule 'user ':edit 'object (second *rules*))
