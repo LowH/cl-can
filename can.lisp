@@ -80,11 +80,17 @@
 	  (funcall can-lambda action object (or user :anonymous))
 	  (error "Please call CAN:COMPILE-RULES.")))
 
+    (defun can-rules-lambda ()
+      (let ((action (gensym "ACTION-"))
+            (object (gensym "OBJECT-"))
+            (user (gensym "USER-")))
+        `(lambda (,action ,object ,user)
+           (eq :can
+               (or ,@(mapcar (lambda (rule)
+                               (can/rule user action
+                                         object rule))
+                             *rules*))))))
+
     (defun compile-rules ()
       (setq can-lambda
-	    (compile nil `(lambda (action object user)
-			    (eq (or ,@(mapcar (lambda (rule)
-						(can/rule 'user 'action
-							  'object rule))
-					      *rules*))
-				:can)))))))
+	    (compile nil (can-rules-lambda))))))
