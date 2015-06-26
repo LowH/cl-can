@@ -85,6 +85,7 @@
             (object (gensym "OBJECT-"))
             (user (gensym "USER-")))
         `(lambda (,action ,object ,user)
+           (declare (ignorable ,action ,object ,user))
            (eq :can
                (or ,@(mapcar (lambda (rule)
                                (can/rule user action
