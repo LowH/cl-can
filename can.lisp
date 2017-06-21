@@ -28,14 +28,14 @@
 
 (defmacro define-permission ((subject permission action object) &body specs)
   `(push '((,subject ,permission ,action ,object) . ,specs)
-	 *rules*))
+         *rules*))
 
 #+nil
 (define-permission (?user :can :edit ?module)
   (?user :is-a 'user
-	 'user.status :active)
+         'user.status :active)
   (?module :is-a 'module
-	   'module.owner ?user))
+           'module.owner ?user))
 #+nil
 (define-permission (:everyone :can :view :all))
 #+nil
@@ -45,8 +45,8 @@
   (destructuring-bind ((s p a o) &body specs) rule
     (let (bindings constants)
       (flet ((unify (r x wild)
-	       (if (facts:binding-p r)
-		   (push (cons r x) bindings)
+               (if (facts:binding-p r)
+                   (push (cons r x) bindings)
                    (if (keywordp r)
                        (unless (eq r wild)
                          (push `(lessp:lessp-equal ,r ,x)
@@ -59,9 +59,9 @@
                  (if (cdr list)
                      `((,prefix ,@list))
                      list))))
-	(unify o object :all)
-	(unify a action :admin)
-	(unify s subject :everyone)
+        (unify o object :all)
+        (unify a action :admin)
+        (unify s subject :everyone)
         (car
          (join 'when
                `(,@(join 'and
@@ -77,8 +77,8 @@
 
     (defun can (action &optional (object :all) (user :anonymous))
       (if can-lambda
-	  (funcall can-lambda action object (or user :anonymous))
-	  (error "Please call CAN:COMPILE-RULES.")))
+          (funcall can-lambda action object (or user :anonymous))
+          (error "Please call CAN:COMPILE-RULES.")))
 
     (defun can-rules-lambda ()
       (let ((action (gensym "ACTION-"))
@@ -94,4 +94,4 @@
 
     (defun compile-rules ()
       (setq can-lambda
-	    (compile nil (can-rules-lambda))))))
+            (compile nil (can-rules-lambda))))))
